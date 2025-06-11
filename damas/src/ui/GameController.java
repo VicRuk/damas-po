@@ -3,6 +3,8 @@ package ui;
 import model.*;
 import enums.Color;
 
+import javax.swing.*;
+
 class GameController {
     private final GameState gs;
     private final BoardView board;
@@ -73,6 +75,29 @@ class GameController {
                 sidebar.highlight(gs.getTurno());
             }
             board.repaint();
+            checkVictory();
         } catch (Exception ignored) {}
     }
+
+    private void checkVictory() {
+        boolean whiteCanMove = gs.getBoard().canPlayerMove(Color.BRANCA);
+        boolean blackCanMove = gs.getBoard().canPlayerMove(Color.PRETA);
+
+        if (!whiteCanMove) {
+            showVictoryScreen(Color.PRETA);
+        } else if (!blackCanMove) {
+            showVictoryScreen(Color.BRANCA);
+        }
+    }
+
+    private void showVictoryScreen(Color winner) {
+        gs.encerrar();
+        SwingUtilities.invokeLater(() -> {
+            new VictoryScreen(winner).setVisible(true);
+            // Fechar o tabuleiro
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(board);
+            frame.dispose();
+        });
+    }
+
 }

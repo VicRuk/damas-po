@@ -13,6 +13,7 @@ import java.util.*;
  - Captura obrigatória
  - Captura em cadeia
  - Promoção
+ - Detecção de Vitória
 */
 
 public class Board implements Serializable {
@@ -192,6 +193,31 @@ public class Board implements Serializable {
                 }
         }
         return out;
+    }
+
+    public boolean canPlayerMove(Color player) {
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Position pos = new Position(r, c);
+                Piece p = at(pos).orElse(null);
+
+                if (p != null && p.getColor() == player) {
+                    // Verificar movimentos simples
+                    if (!destinosDeCaptura(p, pos).isEmpty()) return true;
+
+                    // Verificar movimentos de captura
+                    int[] dirs = {-1, 1};
+                    for (int dr : dirs) {
+                        for (int dc : dirs) {
+                            if (!p.permiteDirecao(dr)) continue;
+                            Position to = new Position(r + dr, c + dc);
+                            if (isMovimentoValido(p, pos, to)) return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /* ----------------- Debug ------------------------------------------- */
